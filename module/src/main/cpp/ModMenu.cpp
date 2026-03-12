@@ -1,56 +1,52 @@
-//
-// Created by BALDWİN on 1/6/2025.
-//
-#include <Headers/ModMenu.hpp>
+#include <jni.h>
 #include <string>
-#include <iostream>
-#include <Headers/Drawing.hpp>
-#include <Headers/Utility.hpp>
+#include <curl/curl.h> // İnternet bağlantısı için
 
-#include "imgui.h"
+// --- AYTEAMHACK GÜVENLİK MOTORU ---
+std::string getHWID(JNIEnv *env, jobject context) {
+    jclass contextClass = env->FindClass("android/content/Context");
+    jmethodID getContentResolverMethod = env->GetMethodID(contextClass, "getContentResolver", "()Landroid/content/ContentResolver;");
+    jobject contentResolver = env->CallObjectMethod(context, getContentResolverMethod);
+    jclass settingsSecureClass = env->FindClass("android/provider/Settings$Secure");
+    jmethodID getStringMethod = env->GetStaticMethodID(settingsSecureClass, "getString", "(Landroid/content/ContentResolver;Ljava/lang/String;)Ljava/lang/String;");
+    jstring androidId = (jstring)env->CallStaticObjectMethod(settingsSecureClass, getStringMethod, contentResolver, env->NewStringUTF("android_id"));
+    return env->GetStringUTFChars(androidId, 0);
+}
 
-#define TARGET_LIBRARY "libil2cpp.so"
+// Firebase'den veri çekme (Basitleştirilmiş Mantık)
+void checkKeySystem(const char* userKey, JNIEnv *env, jobject context) {
+    std::string deviceID = getHWID(env, context);
+    std::string url = "https://ayteamhack-38db0-default-rtdb.europe-west1.firebasedatabase.app/Keys/" + std::string(userKey) + ".json";
+    
+    // Burada 'curl' veya 'system' üzerinden veri çekilir
+    // Gelen veri içindeki 'hwid' ile deviceID karşılaştırılır
+    // Eğer hwid == "none" ise, o keye deviceID kaydedilir (İlk Giriş)
+}
 
-void ModMenu::DrawMenu(int width, int height) {
-        static char sifre[64] = "";
-    static bool girisYapildi = false;
+// --- IMGUI MENÜ İÇİ KULLANIM ---
+static char keyInput[64] = "";
+static std::string statusMsg = "Lutfen Key Giriniz";
+static bool isAuth = false;
 
-    if (!girisYapildi) {
-        // --- ŞİFRE EKRANI ---
-        ImGui::Begin("AYTEAMHACK GUVENLIK");
-        ImGui::Text("Sisteme giris icin sifre girin:");
-        ImGui::InputText("##sifre", sifre, sizeof(sifre), ImGuiInputTextFlags_Password);
-        
-        if (ImGui::Button("Giris Yap")) {
-            // "ayteam123" yazan yere kendi gizli şifreni yaz!
-            if (strcmp(sifre, "ayteam123") == 0) { 
-                girisYapildi = true;
-            }
+if (!isAuth) {
+    ImGui::Begin("AYTEAMHACK - LISANS KONTROL");
+    ImGui::Text("Cihaz ID: %s", "Okunuyor..."); // Buraya HWID fonksiyonu gelecek
+    ImGui::Separator();
+    ImGui::InputText("Key", keyInput, 64);
+
+    if (ImGui::Button("Sistemi Dogrula (Server)")) {
+        // Burada Firebase kontrolü tetiklenir
+        // Şimdilik mantığı kuruyoruz:
+        if (strlen(keyInput) > 5) {
+            statusMsg = "Sunucuya baglaniliyor...";
+            // EĞER KEY DOĞRUYSA:
+            // isAuth = true;
+        } else {
+            statusMsg = "Gecersiz Key Formati!";
         }
-        ImGui::End();
-    } else {
-        // --- ASIL VIP MENÜ ---
-        ImGui::Begin("AYTEAMHACK VIP MENU");
-        
-        ImGui::Text("Sisteme Hosgeldin Patron!");
-        ImGui::Separator();
-        
-        // Hile butonlarını ve özelliklerini daha sonra buraya ekleyeceğiz
-        ImGui::Text("Ozellikler yakinda eklenecek...");
-        
-        ImGui::End();
     }
-
-void ModMenu::HackThread() {
-    Drawing::InitMenu(DrawMenu);
-
-    do {
-        LOGI("Waiting for target library to load to load");
-        sleep(1);
-    } while (Utility::IsLibraryLoaded(TARGET_LIBRARY));
-    LOGI("Target library loaded at 0x%lu", Utility::GetBaseAddress(TARGET_LIBRARY));
-
-    //Hooks and Patches here
-
-    LOGI("ModMenu initialized");
+    ImGui::TextColored(ImVec4(1,0,0,1), "%s", statusMsg.c_str());
+    ImGui::End();
+} else {
+    // ASIL HİLE MENÜSÜ BURAYA AÇILIR
 }
