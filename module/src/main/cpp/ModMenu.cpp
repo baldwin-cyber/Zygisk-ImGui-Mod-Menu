@@ -2,6 +2,8 @@
 // Created by BALDWİN on 1/6/2025.
 //
 #include <Headers/ModMenu.hpp>
+#include <string>
+#include <iostream>
 #include <Headers/Drawing.hpp>
 #include <Headers/Utility.hpp>
 
