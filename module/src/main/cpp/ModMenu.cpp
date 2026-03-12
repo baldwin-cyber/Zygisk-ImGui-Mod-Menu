@@ -10,8 +10,34 @@
 #define TARGET_LIBRARY "libil2cpp.so"
 
 void ModMenu::DrawMenu(int width, int height) {
-    ImGui::ShowDemoWindow();
-}
+        static char sifre[64] = "";
+    static bool girisYapildi = false;
+
+    if (!girisYapildi) {
+        // --- ŞİFRE EKRANI ---
+        ImGui::Begin("AYTEAMHACK GUVENLIK");
+        ImGui::Text("Sisteme giris icin sifre girin:");
+        ImGui::InputText("##sifre", sifre, sizeof(sifre), ImGuiInputTextFlags_Password);
+        
+        if (ImGui::Button("Giris Yap")) {
+            // "ayteam123" yazan yere kendi gizli şifreni yaz!
+            if (strcmp(sifre, "ayteam123") == 0) { 
+                girisYapildi = true;
+            }
+        }
+        ImGui::End();
+    } else {
+        // --- ASIL VIP MENÜ ---
+        ImGui::Begin("AYTEAMHACK VIP MENU");
+        
+        ImGui::Text("Sisteme Hosgeldin Patron!");
+        ImGui::Separator();
+        
+        // Hile butonlarını ve özelliklerini daha sonra buraya ekleyeceğiz
+        ImGui::Text("Ozellikler yakinda eklenecek...");
+        
+        ImGui::End();
+    }
 
 void ModMenu::HackThread() {
     Drawing::InitMenu(DrawMenu);
