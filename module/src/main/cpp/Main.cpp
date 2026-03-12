@@ -1,10 +1,10 @@
 //
-// Created by Reveny on 1/6/2025.
+// Created by BALDWİN İN 1/6/2025.
 //
 #include "Headers/ModMenu.hpp"
 #include "Include/zygisk.hpp"
 
-#define TARGET_PACKAGE std::string("com.tencent.ig")
+#define TARGET_PACKAGE std::string("com.axlebolt.com")
 
 using zygisk::Api;
 using zygisk::AppSpecializeArgs;
