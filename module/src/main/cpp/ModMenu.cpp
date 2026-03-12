@@ -1,11 +1,13 @@
 #include <Headers/ModMenu.hpp>
-#include <Headers/Drawing.hpp>
-#include <Headers/Utility.hpp>
-#include <Headers/Logger.hpp>
-#include "imgui.h"
+#include <jni.h>
 #include <string>
+#include <unistd.h>
+#include "Headers/ModMenu.hpp"
+#include "Headers/Drawing.hpp"
+#include "Headers/Utility.hpp"
+#include "Headers/Logger.hpp"
+#include "imgui.h"
 
-// Oyundaki kütüphane adı (Genelde libil2cpp.so olur)
 #define TARGET_LIBRARY "libil2cpp.so"
 
 void ModMenu::DrawMenu(int width, int height) {
@@ -14,37 +16,24 @@ void ModMenu::DrawMenu(int width, int height) {
 
     if (!girisYapildi) {
         ImGui::Begin("AYTEAMHACK GUVENLIK");
-        ImGui::Text("Sisteme giris icin sifre girin:");
-        ImGui::InputText("##sifre", sifre, sizeof(sifre));
-
+        ImGui::Text("Sifre Giriniz:");
+        ImGui::InputText("##key", sifre, 64);
         if (ImGui::Button("Giris Yap")) {
-            // Şifren: ayteam123
-            if (strcmp(sifre, "AYTEAM-MOD-ADMİN-GİRİŞ") == 0) {
+            if (strcmp(sifre, "ayteam123") == 0) {
                 girisYapildi = true;
             }
         }
         ImGui::End();
     } else {
-        ImGui::Begin("AYTEAMHACK VIP MENU");
-        ImGui::Text("Hosgeldin Patron! Sistem Aktif.");
-        ImGui::Separator();
-        
-        // Buraya hile butonlarını ekleyebilirsin
-        if (ImGui::Button("Sekmeme (No Recoil)")) {
-            // Kodlar buraya gelecek
-        }
-        
+        ImGui::Begin("AYTEAMHACK VIP");
+        ImGui::Text("Sisteme Hosgeldin Patron!");
         ImGui::End();
     }
 }
 
 void ModMenu::HackThread() {
     Drawing::InitMenu(DrawMenu);
-
     do {
-        LOGI("Hedef kütüphane bekleniyor...");
         sleep(1);
     } while (!Utility::IsLibraryLoaded(TARGET_LIBRARY));
-    
-    LOGI("Kütüphane yüklendi, AYTEAMHACK hazır!");
 }
